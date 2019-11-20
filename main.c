@@ -35,15 +35,10 @@ static int pre_handler(void* data, struct input_event* ev, char* k) {
     case KEY_Q: ev->code = KEY_GRAVE; break;
     case KEY_E:
       /* inject tilde */
-      ev->value = 1;
       ev->code = KEY_LEFTSHIFT;
       stupidlayers_send(sl, ev);
       ev->code = KEY_GRAVE;
-      stupidlayers_send(sl, ev);
-      ev->value = 0;
-      ev->code = KEY_LEFTSHIFT;
-      stupidlayers_send(sl, ev);
-      return 1;
+      break;
     case KEY_1: ev->code = KEY_F1; break;
     case KEY_2: ev->code = KEY_F2; break;
     case KEY_3: ev->code = KEY_F3; break;
