@@ -30,3 +30,19 @@ if you run this by hand on the keyboard that gets captured you might
 end up with the enter key getting stuck from missing the release event.
 just press enter again to stop it. it's better if you put this in your
 xinitrc though
+
+example of finding a device by name (what I have in my xinitrc):
+
+```sh
+sudo killall stupidlayers
+for x in /dev/input/event*; do
+  devname=$(cat $(echo $x | sed 's|dev|sys/class|g')/device/name)
+  if [ "$devname" = "SONiX USB DEVICE" ]; then
+    sudo stupidlayers $x &
+    break
+  fi
+done
+```
+
+keep in mind that if you put this in .xinitrc you must have no password
+required on sudo
