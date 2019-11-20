@@ -8,8 +8,9 @@ remapper
 
 keybinds:
 
-* esc acts as a normal fn key if held down
 * caps lock is esc
+* esc is `
+* esc acts as a normal fn key if held down
 * esc + q is `
 * esc + shift + q is ~
 * esc + e is ~

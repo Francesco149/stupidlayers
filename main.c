@@ -14,8 +14,9 @@
 
 /*
  * motospeed ck62 keybinds
- * - esc acts as fn key if held down
  * - caps lock is esc
+ * - esc is `
+ * - esc acts as fn key if held down
  * - esc + q is `
  * - esc + shift + q is ~
  * - esc + e is ~
@@ -29,7 +30,10 @@ typedef struct {
 static int pre_handler(void* data, struct input_event* ev, char* k) {
   ck62_state_t* ck62 = data;
   stupidlayers_t* sl = ck62->sl;
-  if (ev->code == KEY_CAPSLOCK) { ev->code = KEY_ESC; }
+  switch (ev->code) {
+    case KEY_CAPSLOCK: ev->code = KEY_ESC; break;
+    case KEY_ESC: ev->code = KEY_GRAVE; break;
+  }
   if (!k[KEY_ESC]) { return 0; }
   switch (ev->code) {
     case KEY_Q: ev->code = KEY_GRAVE; break;
