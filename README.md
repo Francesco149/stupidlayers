@@ -24,3 +24,8 @@ for me it's `/dev/input/event3`
 gcc main.c -o stupidlayers
 sudo ./stupidlayers /dev/input/event3
 ```
+
+if you run this by hand on the keyboard that gets captured you might
+end up with the enter key getting stuck from missing the release event.
+just press enter again to stop it. it's better if you put this in your
+xinitrc though
