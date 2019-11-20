@@ -156,16 +156,13 @@ void stupidlayers_run(stupidlayers_t* sl, input_handler_t* pre_handler,
         fprintf(stderr, "W: ignoring large keycode 0x%x\n", ev.code);
         continue;
       }
-      if (!(ev.value & 2)) {
-        /* ignore repeat status, we don't care */
-        /* modify event here if desired */
-        if (pre_handler && pre_handler(data, &ev, sl->keys)) {
-          continue;
-        }
-        sl->keys[ev.code] = (char)ev.value;
-        if (post_handler && post_handler(data, &ev, sl->keys)) {
-          continue;
-        }
+      /* modify event here if desired */
+      if (pre_handler && pre_handler(data, &ev, sl->keys)) {
+        continue;
+      }
+      sl->keys[ev.code] = (char)ev.value;
+      if (post_handler && post_handler(data, &ev, sl->keys)) {
+        continue;
       }
     }
     /* forward event to the virtual device */

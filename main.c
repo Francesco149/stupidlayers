@@ -21,8 +21,14 @@
  * - esc + e is ~
  */
 
+typedef struct {
+  stupidlayers_t* sl;
+  int matched_hotkey;
+} ck62_state_t;
+
 static int pre_handler(void* data, struct input_event* ev, char* k) {
-  stupidlayers_t* sl = data;
+  ck62_state_t* ck62 = data;
+  stupidlayers_t* sl = ck62->sl;
   if (ev->code == KEY_CAPSLOCK) { ev->code = KEY_ESC; }
   if (!k[KEY_ESC]) { return 0; }
   switch (ev->code) {
@@ -63,7 +69,10 @@ static int pre_handler(void* data, struct input_event* ev, char* k) {
     case KEY_RIGHTCTRL: ev->code = KEY_RIGHT; break;
     case KEY_ESC:
       if (!ev->value) {
-        if (k[KEY_ESC] & 4) { return 1; }
+        if (ck62->matched_hotkey) {
+          ck62->matched_hotkey = 0;
+          return 1;
+        }
         /* releasing esc and no hotkey matched, inject esc we skipped */
         ev->value = 1;
         stupidlayers_send(sl, ev);
@@ -74,11 +83,10 @@ static int pre_handler(void* data, struct input_event* ev, char* k) {
       return 0;
   }
   /*
-   * if we get here, a hotkey has matched. as a hack I set an unused bit
-   * of the value to signal that we matched at least a hotkey, that way
-   * I know to not submit the esc keypress later
+   * if we get here, a hotkey has matched. I remember this so I can
+   * suppress the esc keystroke later
    */
-  k[KEY_ESC] |= 4;
+  ck62->matched_hotkey = 1;
   return 0;
 }
 
@@ -90,10 +98,13 @@ static int post_handler(void* data, struct input_event* ev, char* k) {
 #define die(x) { fprintf(stderr, x); exit(1); }
 
 static int run_cli(char* device) {
-  stupidlayers_t* sl = new_stupidlayers(device);
+  ck62_state_t ck62;
+  stupidlayers_t* sl;
+  ck62.sl = sl = new_stupidlayers(device);
+  ck62.matched_hotkey = 0;
   if (!sl) { return 1; }
   if (sl->errstr) die(sl->errstr);
-  stupidlayers_run(sl, pre_handler, post_handler, sl);
+  stupidlayers_run(sl, pre_handler, post_handler, &ck62);
   if (sl->errstr) die(sl->errstr);
   return 0;
 }
