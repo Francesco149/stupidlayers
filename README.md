@@ -28,8 +28,31 @@ sudo ./stupidlayers /dev/input/event3
 
 if you run this by hand on the keyboard that gets captured you might
 end up with the enter key getting stuck from missing the release event.
-just press enter again to stop it. it's better if you put this in your
-xinitrc though
+just press enter again to stop it
+
+ideally you want a udev rule that automatically runs stupidlayers when
+the keyboard is plugged in, here's an example for void linux (assumes you
+copied stupidlayers to /usr/bin)
+
+note that the rules.d directory might be different in other distros
+
+```sh
+sudo tee /usr/lib/udev/rules.d/30-stupidlayers.rules << "EOF"
+ACTION=="add", \
+KERNEL=="event[0-9]*", \
+ATTRS{name}=="SONiX USB DEVICE", \
+RUN+="/bin/sh -c 'echo /usr/bin/stupidlayers /dev/input/%k | at now'"
+EOF
+
+sudo xbps-install at
+sudo ln -s /etc/sv/at /var/service
+sudo sv start at
+sudo udevadm control --reload
+sudo udevadm control --reload-rules
+```
+
+you can also just make a script that finds the device and run it in
+your xinitrc or something, but it won't stick if you unplug the keyboard
 
 example of finding a device by name (what I have in my xinitrc):
 
