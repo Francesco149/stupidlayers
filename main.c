@@ -70,6 +70,7 @@ static int pre_handler(void* data, struct input_event* ev, char* k) {
       if (!ev->value) {
         if (ck62->matched_hotkey) {
           ck62->matched_hotkey = 0;
+          k[KEY_ESC] = 0; /* mark esc as released manually */
           return 1;
         }
         /* releasing esc and no hotkey matched, inject esc we skipped */
